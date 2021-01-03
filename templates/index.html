@@ -21,9 +21,9 @@
             })
 
             $('#send_money_button').click(function () {
-                let confirm_test = 'Are you sure to send?';
-                let confirm_result = confirm(confirm_test);
-                if (confirm_result != true) {
+                let confirm_text = 'Are you sure to send?';
+                let confirm_result = confirm(confirm_text);
+                if (confirm_result !== true) {
                     alert('Canceled');
                     return
                 }
@@ -34,7 +34,7 @@
                     'recipient_blockchain_address': $('#recipient_blockchain_address').val(),
                     'sender_public_key': $('#public_key').val(),
                     'value': $('#send_amount').val(),
-                }
+                };
 
                 $.ajax({
                     url: '/transaction',
@@ -43,13 +43,38 @@
                     dataType: 'json',
                     data: JSON.stringify(transaction_data),
                     success: function (response) {
-                        alert('Send success');
+                        alert('Send success')
                     },
                     error: function (response) {
-                        alert('Send failed', error);
+                        alert('Send failed', error)
                     }
                 })
             })
+
+            function reload_amount() {
+                let data = {'blockchain_address': $('#blockchain_address').val()}
+                $.ajax({
+                    url: '/wallet/amount',
+                    type: 'GET',
+                    data: data,
+                    success: function (response) {
+                        let amount = response['amount'];
+                        $('#wallet_amount').text(amount);
+                        console.log(amount);
+                    },
+                    error: function (error) {
+                        console.error(error);
+                    }
+                })
+            }
+
+            /*
+            $('#reload_wallet').click(function () {
+                   reload_amount();
+            });
+            */
+
+            setInterval(reload_amount, 3000);
         })
     </script>
 </head>
@@ -57,8 +82,9 @@
 <div>
     <h1>Wallet</h1>
     <div id="wallet_amount">0</div>
+    <!--
     <button id="reload_wallet">Reload Wallet</button>
-
+    -->
     <p>Public Key</p>
     <textarea id="public_key" rows="2" cols="100"></textarea>
     <p>Private Key</p>
